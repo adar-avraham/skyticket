@@ -1,0 +1,12 @@
+{
+  "skyticket-flights": [
+    { "PutRequest": { "Item": { "route": {"S": "JFK-LHR"}, "departure": {"S": "2026-11-05T08:30"}, "flightNo": {"S": "SK101"}, "price": {"N": "420"}, "seats": {"N": "12"} } } },
+    { "PutRequest": { "Item": { "route": {"S": "JFK-LHR"}, "departure": {"S": "2026-11-05T19:45"}, "flightNo": {"S": "SK103"}, "price": {"N": "380"}, "seats": {"N": "3"} } } },
+    { "PutRequest": { "Item": { "route": {"S": "JFK-LHR"}, "departure": {"S": "2026-11-06T08:30"}, "flightNo": {"S": "SK101"}, "price": {"N": "455"}, "seats": {"N": "20"} } } },
+    { "PutRequest": { "Item": { "route": {"S": "LHR-JFK"}, "departure": {"S": "2026-11-12T11:00"}, "flightNo": {"S": "SK102"}, "price": {"N": "399"}, "seats": {"N": "8"} } } },
+    { "PutRequest": { "Item": { "route": {"S": "LHR-JFK"}, "departure": {"S": "2026-11-13T11:00"}, "flightNo": {"S": "SK102"}, "price": {"N": "410"}, "seats": {"N": "15"} } } },
+    { "PutRequest": { "Item": { "route": {"S": "JFK-CDG"}, "departure": {"S": "2026-11-05T21:10"}, "flightNo": {"S": "SK201"}, "price": {"N": "510"}, "seats": {"N": "6"} } } },
+    { "PutRequest": { "Item": { "route": {"S": "JFK-CDG"}, "departure": {"S": "2026-11-07T21:10"}, "flightNo": {"S": "SK201"}, "price": {"N": "495"}, "seats": {"N": "0"} } } },
+    { "PutRequest": { "Item": { "route": {"S": "CDG-JFK"}, "departure": {"S": "2026-11-14T13:25"}, "flightNo": {"S": "SK202"}, "price": {"N": "470"}, "seats": {"N": "9"} } } }
+  ]
+}

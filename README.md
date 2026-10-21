@@ -25,3 +25,17 @@ Then open http://skyticket-web.s3-website.localhost.floci.io:4566/
 
 `deploy.sh` refuses to run unless the AWS CLI points at localhost,
 so it can never deploy to a real AWS account by accident.
+
+## Database (DynamoDB)
+
+Table `skyticket-flights`: partition key `route` (e.g. `JFK-LHR`), sort key `departure` (e.g. `2026-11-05T08:30`).
+A search for a route on a date is a single Query, not a Scan.
+
+```bash
+aws dynamodb create-table --table-name skyticket-flights \
+  --attribute-definitions AttributeName=route,AttributeType=S AttributeName=departure,AttributeType=S \
+  --key-schema AttributeName=route,KeyType=HASH AttributeName=departure,KeyType=RANGE \
+  --billing-mode PAY_PER_REQUEST
+aws dynamodb wait table-exists --table-name skyticket-flights
+aws dynamodb batch-write-item --request-items file://data/flights.json
+```
