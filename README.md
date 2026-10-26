@@ -39,3 +39,18 @@ aws dynamodb create-table --table-name skyticket-flights \
 aws dynamodb wait table-exists --table-name skyticket-flights
 aws dynamodb batch-write-item --request-items file://data/flights.json
 ```
+
+## Search API (Lambda)
+
+`api/search.py` receives `{"from", "to", "date"}`, builds the route key (`FROM-TO`)
+and runs one DynamoDB Query.
+
+```bash
+zip -j api/search.zip api/search.py
+aws lambda create-function --function-name skyticket-search --runtime python3.12 \
+  --handler search.handler --zip-file fileb://api/search.zip \
+  --role arn:aws:iam::000000000000:role/lambda-role
+aws lambda wait function-active-v2 --function-name skyticket-search
+aws lambda invoke --function-name skyticket-search --cli-binary-format raw-in-base64-out \
+  --payload '{"from":"JFK","to":"LHR","date":"2026-11-05"}' response.json
+```
