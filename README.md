@@ -54,3 +54,14 @@ aws lambda wait function-active-v2 --function-name skyticket-search
 aws lambda invoke --function-name skyticket-search --cli-binary-format raw-in-base64-out \
   --payload '{"from":"JFK","to":"LHR","date":"2026-11-05"}' response.json
 ```
+
+## HTTP API (API Gateway)
+
+`GET /search?from=JFK&to=LHR&date=2026-11-05` → Lambda `skyticket-search` → DynamoDB.
+
+```bash
+FN_ARN=$(aws lambda get-function --function-name skyticket-search --query Configuration.FunctionArn --output text)
+aws apigatewayv2 create-api --name skyticket-api --protocol-type HTTP --target "$FN_ARN"
+API_ID=$(aws apigatewayv2 get-apis --query "Items[?Name=='skyticket-api'].ApiId" --output text)
+curl "http://$API_ID.execute-api.localhost.floci.io:4566/search?from=JFK&to=LHR&date=2026-11-05"
+```
