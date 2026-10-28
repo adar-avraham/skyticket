@@ -1,3 +1,4 @@
 .DS_Store
 api/*.zip
 response.json
+frontend/config.js

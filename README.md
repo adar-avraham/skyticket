@@ -65,3 +65,15 @@ aws apigatewayv2 create-api --name skyticket-api --protocol-type HTTP --target "
 API_ID=$(aws apigatewayv2 get-apis --query "Items[?Name=='skyticket-api'].ApiId" --output text)
 curl "http://$API_ID.execute-api.localhost.floci.io:4566/search?from=JFK&to=LHR&date=2026-11-05"
 ```
+
+## Website ↔ API
+
+The page reads the API address from `frontend/config.js` (not in Git, because the ID changes on every rebuild):
+
+```bash
+API_ID=$(aws apigatewayv2 get-apis --query "Items[?Name=='skyticket-api'].ApiId" --output text)
+echo "const API_URL = \"http://$API_ID.execute-api.localhost.floci.io:4566\";" > frontend/config.js
+./deploy.sh
+```
+
+The Lambda returns `Access-Control-Allow-Origin: *` so the browser lets the page read the answer (CORS).

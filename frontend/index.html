@@ -7,17 +7,61 @@
     body { font-family: system-ui, sans-serif; max-width: 36rem; margin: 3rem auto; padding: 0 1rem; }
     form { display: grid; gap: .5rem; }
     input, button { padding: .6rem; font-size: 1rem; }
+    #results p { padding: .6rem; border: 1px solid #ddd; border-radius: 6px; }
   </style>
 </head>
 <body>
-  <h1>SkyTicket✈️ </h1>
-  <p>Find cheap flights. (Search arrives in a later lesson.)</p>
+  <h1>✈️ SkyTicket</h1>
+  <p>Find cheap flights.</p>
   <form>
-    <input placeholder="From (e.g. JFK)">
-    <input placeholder="To (e.g. LHR)">
-    <input type="date">
-    <button type="button">Search flights</button>
+    <input name="from" placeholder="From (e.g. JFK)" required>
+    <input name="to" placeholder="To (e.g. LHR)" required>
+    <input name="date" type="date" required>
+    <button>Search flights</button>
   </form>
-  <p><small>Version 3 · served from S3</small></p>
+  <div id="results"></div>
+  <p><small>Version 4 · search by API Gateway + Lambda + DynamoDB</small></p>
+
+  <script src="config.js"></script>
+  <script>
+    const form = document.querySelector("form");
+    const results = document.querySelector("#results");
+
+    // Show one line of text in the results area
+    function show(text) {
+      const line = document.createElement("p");
+      line.textContent = text;
+      results.append(line);
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();                 // stay on this page
+      results.textContent = "Searching…";
+
+      // 1. Build the URL from the form: …/search?from=JFK&to=LHR&date=2026-11-05
+      const search = new URLSearchParams({
+        from: form.from.value,
+        to: form.to.value,
+        date: form.date.value,
+      });
+      const url = API_URL + "/search?" + search;
+
+      // 2. Call the API and show the answer
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        results.textContent = "";
+        show(data.message);
+        for (const flight of data.flights) {
+          const seats = Number(flight.seats.N);
+          show(flight.flightNo.S + " · " + flight.departure.S.replace("T", " ") +
+               " · $" + flight.price.N + " · " +
+               (seats === 0 ? "Sold out" : seats + " seats left"));
+        }
+      } catch (error) {
+        results.textContent = "Could not reach the search API.";
+      }
+    });
+  </script>
 </body>
 </html>

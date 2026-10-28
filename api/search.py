@@ -1,14 +1,14 @@
-# search.py — SkyTicket's flight search (Lesson 6a: called through API Gateway)
+# search.py — SkyTicket's flight search (Lesson 6b: called by the website)
+import json
 import boto3
 
 dynamodb = boto3.client("dynamodb")
 
 
 def handler(event, context):
-    # NEW: API Gateway puts the URL's ?from=…&to=…&date=… in here
     params = event["queryStringParameters"]
-    origin = params["from"]
-    destination = params["to"]
+    origin = params["from"].upper()
+    destination = params["to"].upper()
     date = params["date"]
 
     route = f"{origin}-{destination}"
@@ -18,7 +18,15 @@ def handler(event, context):
         ExpressionAttributeValues={":r": {"S": route}, ":d": {"S": date}},
     )
 
+    # NEW: a full web answer, with a header that lets websites read it (CORS)
     return {
-        "message": f"Found {result['Count']} flights {origin} -> {destination} on {date}",
-        "flights": result["Items"],
+        "statusCode": 200,
+        "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+        "body": json.dumps({
+            "message": f"Found {result['Count']} flights {origin} -> {destination} on {date}",
+            "flights": result["Items"],
+        }),
     }
