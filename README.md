@@ -77,3 +77,14 @@ echo "const API_URL = \"http://$API_ID.execute-api.localhost.floci.io:4566\";" >
 ```
 
 The Lambda returns `Access-Control-Allow-Origin: *` so the browser lets the page read the answer (CORS).
+
+## Infrastructure as code (Terraform)
+
+The flights table is managed by Terraform in `infra/` (floci endpoint + dummy keys, so it can never touch a real AWS account).
+
+```bash
+cd infra
+terraform init
+terraform apply
+aws dynamodb batch-write-item --request-items file://../data/flights.json
+```

@@ -2,3 +2,6 @@
 api/*.zip
 response.json
 frontend/config.js
+*.tfstate
+infra/.terraform/
+*.tfstate.backup

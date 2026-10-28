@@ -26,7 +26,7 @@ def handler(event, context):
             "Access-Control-Allow-Origin": "*",
         },
         "body": json.dumps({
-            "message": f"Found {result['Count']} flights {origin} -> {destination} on {date}",
+            "message": f" {result['Count']} flights {origin} -> {destination} on {date}",
             "flights": result["Items"],
         }),
     }
