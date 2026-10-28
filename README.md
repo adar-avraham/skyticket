@@ -88,3 +88,46 @@ terraform init
 terraform apply
 aws dynamodb batch-write-item --request-items file://../data/flights.json
 ```
+
+# ✈️ SkyTicket
+
+A flight-search website built as a DevOps learning project: a serverless app on AWS,
+defined entirely in Terraform and run locally on [floci](https://github.com/floci-io/floci), a free AWS emulator.
+
+## Architecture
+
+```
+Browser → S3 static website → API Gateway (HTTP API) → Lambda (Python) → DynamoDB
+          frontend/            GET /search?from&to&date   api/search.py     skyticket-flights
+```
+
+- **DynamoDB**: partition key `route` (`JFK-LHR`), sort key `departure` (`2026-11-05T08:30`), so every search is one Query, not a Scan.
+- **Lambda**: builds the route key from the request, normalizes input (`jfk` → `JFK`), returns JSON with a CORS header.
+- **Website**: plain HTML + JavaScript (`fetch`). The API address is generated into `frontend/config.js` by Terraform.
+
+## Run it
+
+```bash
+floci start
+eval "$(floci env)"
+./up.sh
+```
+
+`up.sh` runs `terraform apply` (all infrastructure), loads `data/flights.json`, and uploads the website.
+It's safe to run again at any time, and after a floci restart it rebuilds everything.
+
+## Project layout
+
+| Path | What |
+|---|---|
+| `infra/main.tf` | All infrastructure (Terraform) |
+| `api/search.py` | The search Lambda |
+| `frontend/` | The website |
+| `data/flights.json` | Seed data |
+| `up.sh`, `deploy.sh` | Rebuild everything / upload the website |
+
+## Safety
+
+- Terraform uses floci endpoints and dummy keys, so it can never touch a real AWS account.
+- `up.sh` and `deploy.sh` refuse to run unless the AWS CLI points at localhost.
+- Generated files (`config.js`, zips) and Terraform state are kept out of Git.

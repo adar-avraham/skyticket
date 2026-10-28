@@ -1,4 +1,4 @@
-# search.py — SkyTicket's flight search (Lesson 6b: called by the website)
+# search.py — SkyTicket's flight search (Lesson 7b: deployed by Terraform)
 import json
 import boto3
 
@@ -18,7 +18,10 @@ def handler(event, context):
         ExpressionAttributeValues={":r": {"S": route}, ":d": {"S": date}},
     )
 
-    # NEW: a full web answer, with a header that lets websites read it (CORS)
+    count = result["Count"]
+    word = "flight" if count == 1 else "flights"
+
+    # A full web answer, with a header that lets websites read it (CORS)
     return {
         "statusCode": 200,
         "headers": {
@@ -26,7 +29,7 @@ def handler(event, context):
             "Access-Control-Allow-Origin": "*",
         },
         "body": json.dumps({
-            "message": f" {result['Count']} flights {origin} -> {destination} on {date}",
+            "message": f"Found {count} {word} {origin} -> {destination} on {date}",
             "flights": result["Items"],
         }),
     }
